@@ -1,0 +1,4 @@
+#!/bin/ksh
+
+rm resources/*.bam.bai int/* qc/* logs/*
+rm -rf tmp/* .snakemake

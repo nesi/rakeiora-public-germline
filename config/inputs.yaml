@@ -1,0 +1,8 @@
+singularity_samtools:  "/shared/singularities/samtools_1-9_1.0.0.sif"
+singularity_java:      "/shared/singularities/openjdk1.8.simg"
+singularity_vt:        "/shared/singularities/vt.simg"
+singularity_vt2:       "/shared/singularities/variantutils_0.6.sif"
+referenceFile:         "/shared/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
+varscanLib:            "lib/VarScan.v2.4.4.jar"
+vcfannoConfig:         "lib/conf.toml"
+picardLib:             "/shared/lib/picard.jar"

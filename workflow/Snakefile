@@ -1,0 +1,64 @@
+# Main entrypoint of the workflow. 
+# Please follow the best practices: 
+# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
+# in particular regarding the standardized folder structure mentioned there. 
+
+configfile: "config/inputs.yaml"
+sampleName, = glob_wildcards("resources/{id}.bam") # Bam files to iterate across
+
+singularity_samtools = config["singularity_samtools"]
+singularity_java     = config["singularity_java"]
+singularity_vt       = config["singularity_vt"]
+singularity_vt2      = config["singularity_vt2"]
+varscanLib           = config["varscanLib"]
+picardLib            = config["picardLib"]
+referenceFile        = config["referenceFile"]
+vcfannoConfig        = config["vcfannoConfig"]
+
+bamBaiFiles          = "resources/{sample}.bam.bai"
+normalizedVCF        = "results/{sample}.normalised.vcf"
+normalizedVCFgz      = "results/{sample}.normalised.vcf.gz"
+normalizedVCFgztbi   = "results/{sample}.normalised.vcf.gz.tbi"
+annotatedVCF         = "results/{sample}.annotated.vcf"
+filteredVCF          = "results/{sample}.filtered.vcf"
+dupFiles             = "int/{sample}.markDuplicates.bam"
+sortedFiles          = "int/{sample}.markDuplicates.sorted.bam"
+sortedBamFiles       = "int/{sample}.markDuplicates.sorted.bam.bai"
+pileupFiles          = "int/{sample}.pileup"
+varscanFiles         = "int/{sample}.varscan.germline.vcf"
+decompFiles          = "int/{sample}.decomposed.vcf"
+normalisedFiles      = "int/{sample}.normalised.vcf"
+normalisedGzFiles    = "int/{sample}.normalised.vcf.gz"
+normalisedGzTbiFiles = "int/{sample}.normalised.vcf.gz.tbi"
+annotatedFiles       = "results/{sample}.annotated.vcf"
+filteredFiles        = "results/{sample}.filtered.vcf"
+
+all_results = expand([bamBaiFiles], sample = sampleName) \
+	,expand([dupFiles], sample = sampleName) \
+	,expand([sortedFiles], sample = sampleName) \
+	,expand([sortedBamFiles], sample = sampleName) \
+	,expand([pileupFiles], sample = sampleName) \
+	,expand([varscanFiles], sample = sampleName) \
+	,expand([decompFiles], sample = sampleName) \
+	,expand([normalisedFiles], sample = sampleName) \
+	,expand([normalisedGzFiles], sample = sampleName) \
+	,expand([normalisedGzTbiFiles], sample = sampleName) \
+	,expand([annotatedFiles], sample = sampleName) \
+	,expand([filteredFiles], sample = sampleName) \
+
+rule all:
+    input:
+        all_results
+
+#include: "rules/r1.smk"
+include: "rules/index.smk"
+include: "rules/markDuplicates.smk"
+include: "rules/markDuplicatesSort.smk"
+include: "rules/markDuplicatesSortIndex.smk"
+include: "rules/germlinePileup.smk"
+include: "rules/varscan.smk"
+include: "rules/decompose.smk"
+include: "rules/normalise.smk"
+include: "rules/normaliseIndex.smk"
+include: "rules/annotate.smk"
+include: "rules/filter.smk"
